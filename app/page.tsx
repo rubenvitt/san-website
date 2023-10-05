@@ -1,113 +1,597 @@
-import Image from 'next/image'
+import MarkdownParser from "@/app/MarkdownParser";
+
+const markdownContent = `
+- Ausbildung zum Sanitäter im Katastrophenschutz #permanent_note
+    - Prüfung
+      - **Schriftlicher Teil**
+        - Viele Kreuze, Pfeile, ein wenig Freitext
+        - Mögliche Fragen zur schriftlichen Prüfung
+          - Das Luftleitende System besteht aus (5/7 Kreuze)
+          - Wie ist die Hautfarbe von gesunden Menschen (2/5 Kreuze)
+          - Nenne 3 Geräte zur Diagnostik
+            - EKG, Blutdruckmessgerät, Blutoxymeter, Blutzuckermessgerät, Pupillenleuchte
+          - 3 Erkrankungen <span data-inlineref-node="v7GjpkfGakNN">**Akuter Bauch / Aktuer Abdomen**</span>
+            - Milzriss
+            - Perforation von X
+            - Vergiftung
+      - **Praktischer Teil**
+        - Mögliche Fallbeispiele
+          - Gallen-Kolik
+          - Nieren-Kolik
+          - Blinddarmentzündung
+          - fettiges Essen
+          - Asthma-Anfall
+          - [Herzinfarkt / Myokardinfarkt](https://app.tana.inc?nodeid=WUqDvM71oWre)
+          - [Angina pectoris](https://app.tana.inc?nodeid=3_ij7AYhcWcE)
+          - [Trombose](https://app.tana.inc?nodeid=6aGe2XQjMgqa)
+          - Hypertensive Entgleisung
+          - Hypotensiver Notfall
+  - **Definitionen**
+    - Zyanose = Blaufärbung der Lippen #definition
+      - **Definition**: Blaufärbung der Lippen
+      - **Topic(s)**: 
+        - [Blaufärbung](https://app.tana.inc?nodeid=WMr6D2K-z81u)
+        - [Lippen](https://app.tana.inc?nodeid=7v7Yg0u3Ir4q)
+    - Rekappilierungszeit = Zeit, nach der das Nagelbett nach drücken wieder rosa ist #definition
+      - **Definition**: Zeit, nach der das Nagelbett nach drücken wieder rosa ist
+      - Sollte nach 2sek. der Fall sein
+    - Exikose = ~ Dehydrierung - Wassermangel #definition
+      - **Definition**: ~ Dehydrierung - Wassermangel
+    - Trauma = Chirurgische Verletzung (alle) #definition
+      - **Definition**: Chirurgische Verletzung (alle)
+      - **Topic(s)**: 
+        - [Trauma](https://app.tana.inc?nodeid=ji2uJBJsm2Ih)
+        - [Chirurgische Verletzung](https://app.tana.inc?nodeid=anzmAnGjWxET)
+      -
+    - Polytrauma = Lebensbedrohliches [Trauma = Chirurgische Verletzung (alle)](https://app.tana.inc?nodeid=Ob741pieXO8M)  #definition
+      - **Definition**: Lebensbedrohliches [Trauma = Chirurgische Verletzung (alle)](https://app.tana.inc?nodeid=Ob741pieXO8M) 
+    - AF = Atemfrequenz #abkürzung
+      - **Definition**: Atemfrequenz
+    - AZV = Atemzugvolumen #abkürzung
+      - **Definition**: Atemzugvolumen
+    - AMV = Atemminutenvolumen #abkürzung
+      - **Definition**: Atemminutenvolumen
+      - [AF = Atemfrequenz](https://app.tana.inc?nodeid=JqC2MMSPccBB) x [AZV = Atemzugvolumen](https://app.tana.inc?nodeid=DoktDZsuv9A8) = Atemzugvolumen pro Minute
+    - Totraum = Volumen der Atemwege #definition
+      - **Definition**: Volumen der Atemwege
+      - 2ml je kg Körpergewicht
+    - Medulla oblongata = Verlängertes Rückenmark / Markhirn #definition
+      - **Definition**: Verlängertes Rückenmark / Markhirn
+      - Die Medulla oblongata ist ein **wesentlicher Teil des Gehirns und gehört zum Zentralnervensystem**. Hier sind einige wichtige Punkte über die Medulla oblongata, basierend auf den gesammelten Informationen:
+        - **Lage**: Die Medulla oblongata ist **der am weitesten kaudal (hinten bzw. unten) gelegene Teil des Hirnstamms** und liegt zwischen dem Pons (einem anderen Teil des Hirnstamms) und dem Rückenmark​<a href="https://de.wikipedia.org/wiki/Medulla_oblongata#:~:text=Die%20Medulla%20oblongata%2C%20das%20verl%C3%A4ngerte,Bereich%20%2F5%2F%20%E2%80%93%20Medulla%20oblongata">1</a>​​<a href="https://flexikon.doccheck.com/de/Medulla_oblongata#:~:text=Die%20Medulla%20oblongata%2C%20kurz%20MO%2C,Steuerzentrale%20vieler%20Vitalfunktionen%20und%20Reflexe">2</a>​.
+        - **Struktur und Funktion**: Sie ist ein **lebenswichtiges Regulations- und Reflexzentrum** und beherbergt wichtige neuronale Zentren, die für die **Regulation des Blutkreislaufs**, der **Atmung und der Reflexmotorik** zuständig sind. Reflexe sind automatisierte Bewegungsabläufe, die auf einen bestimmten Reiz folgen und nicht willentlich kontrolliert werden können​<a href="https://www.netdoktor.de/anatomie/gehirn/medulla-oblongata/#:~:text=Die%20Medulla%20oblongata%20ist%20die,und%20Reflexzentrum">3</a>​​<a href="https://medlexi.de/Medulla_oblongata#:~:text=Funktion%20%26%20Aufgaben,willk%C3%BCrlich%20nicht%20kontrolliert%20werden%20k%C3%B6nnen">4</a>​.
+        - Weiteres: Die Medulla oblongata wird auch als Myelencephalon oder Nachhirn bezeichnet und ist ein Teil des Rhombencephalons, zusammen mit dem Pons und dem Kleinhirn​<a href="https://flexikon.doccheck.com/de/Medulla_oblongata#:~:text=Die%20Medulla%20oblongata%2C%20kurz%20MO%2C,Steuerzentrale%20vieler%20Vitalfunktionen%20und%20Reflexe">2</a>​​<a href="https://www.netdoktor.de/anatomie/gehirn/medulla-oblongata/#:~:text=Die%20Medulla%20oblongata%20ist%20die,und%20Reflexzentrum">3</a>​.
+      - Die Medulla oblongata ist ein zentraler Teil des Gehirns, der viele lebenswichtige Funktionen und Reflexe steuert, und ist somit ein **kritischer Bereich für die Aufrechterhaltung der grundlegenden lebenserhaltenden Funktionen** des Körpers.
+    - Elektrolyte = geladene Teilchen (Ionen) aus Mineralien, die in wässriger Lösung elektrischen Strom leiten können #definition
+      - **Definition**: geladene Teilchen (Ionen) aus Mineralien, die in wässriger Lösung elektrischen Strom leiten können
+      - **Definition und Eigenschaften**
+        - Elektrolyte sind kleine geladene Teilchen, auch bekannt als **Ionen, die in wässriger Lösung elektrischen Strom leiten können** ​<a href="https://www.sos.de/was-sind-elektrolyte-und-wozu-dienen-sie#:~:text=Elektrolyte%20sind%20kleine%20geladene%2C%20gel%C3%B6ste,Kalium%2C%20Natrium%2C%20Kalzium%20und%20Magnesium">1</a>​​<a href="https://www.netdoktor.de/laborwerte/elektrolyte/#:~:text=Elektrolyte%20sind%20Stoffe%2C%20die%20in,sowie%20m%C3%B6gliche%20Ursachen%20f%C3%BCr">2</a>​.
+        - Sie sind chemische Verbindungen, die im festen, flüssigen oder gelösten Zustand in Ionen dissoziieren können und sich unter dem Einfluss eines elektrischen Feldes gerichtet bewegen​ <a href="https://de.wikipedia.org/wiki/Elektrolyt#:~:text=Als%20Elektrolyt%20bezeichnet%20man%20eine,Die%20elektrische">3</a>​.
+        - Elektrolyte können auch als **in Wasser gelöste Mineralsalze** beschrieben werden, die in positiv und negativ geladene Teilchen zerfallen, wenn sie in einer Flüssigkeit aufgelöst werden​ <a href="https://www.aok.de/pk/magazin/ernaehrung/gesunde-ernaehrung/was-sind-elektrolyte/#:~:text=Als%20Elektrolyte%20bezeichnet%20man%20bestimmte%2C,Teilchen%20werden%20als%20Ionen%20bezeichnet">4</a>​.
+      - **Wichtige Elektrolyte und ihre Funktionen**:
+        - Zu den wichtigen Elektrolyten gehören **Kalium, Natrium, Kalzium und Magnesium​** <a href="https://www.sos.de/was-sind-elektrolyte-und-wozu-dienen-sie#:~:text=Elektrolyte%20sind%20kleine%20geladene%2C%20gel%C3%B6ste,Kalium%2C%20Natrium%2C%20Kalzium%20und%20Magnesium">1</a>​​<a href="https://www.netdoktor.de/laborwerte/elektrolyte/#:~:text=Elektrolyte%20sind%20Stoffe%2C%20die%20in,sowie%20m%C3%B6gliche%20Ursachen%20f%C3%BCr">2</a>​.
+        - Elektrolyte sind **entscheidend für die Flüssigkeitsverteilung und den Wasserhaushalt im menschlichen Organismus** ​<a href="https://www.sos.de/was-sind-elektrolyte-und-wozu-dienen-sie#:~:text=Elektrolyte%20sind%20kleine%20geladene%2C%20gel%C3%B6ste,Kalium%2C%20Natrium%2C%20Kalzium%20und%20Magnesium">1</a>​.
+        - Sie regeln und koordinieren wichtige Funktionen im Körper, und das Verhältnis der Elektrolytzusammensetzung ist innerhalb und außerhalb der Zellen genau abgemessen, was für das reibungslose Funktionieren des Körpers essentiell ist ​<a href="https://www.lifeline.de/ernaehrung-fitness/gesund-essen/elektrolyte-id159943.html#:~:text=Elektrolyte%20sind%20Mineralstoffe%2C%20die%20wichtige,au%C3%9Ferhalb%20der%20Zellen%20genau%20abgemessen">5</a>​.
+      -  **Bedeutung**:
+        - Die Fähigkeit von Elektrolyten, **elektrischen Strom zu leiten, ist für viele physiologische Prozesse von zentraler Bedeutung**, einschließlich der Übertragung von Nervensignalen, der Muskelkontraktion und der Aufrechterhaltung des Säure-Basen-Gleichgewichts und des osmotischen Gleichgewichts im Körper.
+        - Ein **Ungleichgewicht oder Mangel an Elektrolyten kann zu gesundheitlichen Problemen führen**, wie zum Beispiel **Muskelkrämpfen, Unruhe, Herzrhythmusstörungen und in extremen Fällen sogar zum Tod.**
+    - Blutplasma = flüssige Bestandteile des Blutes #definition
+      - **Definition**: flüssige Bestandteile des Blutes
+      - **Topic(s)**: 
+        - [Blood](https://app.tana.inc?nodeid=ISJGHtNnLx7K)
+        - [Blood plasma](https://app.tana.inc?nodeid=plp1Du9CqhjZ)
+    - Thrombotzyten = Blutplättchen #definition
+      - **Definition**: Blutplättchen
+      - **Topic(s)**: 
+        - [Blood](https://app.tana.inc?nodeid=ISJGHtNnLx7K)
+        - [Platelets](https://app.tana.inc?nodeid=j3259CWXjlE0)
+        - [Blood clotting](https://app.tana.inc?nodeid=nrTuKh8E4mp1)
+      - Notwendig für Blutgerinnung
+    - Leukozyten = weiße Blutkörperchen #definition
+      - **Definition**: weiße Blutkörperchen
+      - **Topic(s)**: 
+        - [Leukozyten](https://app.tana.inc?nodeid=ZtladLw0ZMuc)
+        - [weiße Blutkörperchen](https://app.tana.inc?nodeid=rL0JlBqa1HBw)
+        - [Abwehr](https://app.tana.inc?nodeid=SazL3p1bn3Ri)
+        - [Krankheitserreger](https://app.tana.inc?nodeid=pOswNaTy1WOx)
+        - [Fremdstoffe](https://app.tana.inc?nodeid=Tt6fqEw9lvFA)
+      - Abwehr von Krankheitserregern und Fremdstoffen
+    - Erythrozyten = rote Blutkörperchen #definition
+      - **Definition**: rote Blutkörperchen
+      - **Topic(s)**: 
+        - [Erythrozyten](https://app.tana.inc?nodeid=Wj8GQ6r37Twy)
+        - [Rote Blutkörperchen](https://app.tana.inc?nodeid=H5vPPSTQMOMI)
+        - [Hämoglobin](https://app.tana.inc?nodeid=pnLe4oYZ1sx2)
+        - [Sauerstoff](https://app.tana.inc?nodeid=7wxWFj3P1AJQ)
+        - [Träger](https://app.tana.inc?nodeid=dyn9x6iuCeYS)
+      - **Bestandteile**
+        - Hämoglobin (roter Farbstoff) ist Träger für Sauerstoff
+        -
+      - Träger von Sauerstoff
+    - Koronargefäße = Herzkranzgefäße #definition
+      - **Definition**: Herzkranzgefäße
+      - **Topic(s)**: 
+        - [Koronargefäße](https://app.tana.inc?nodeid=0YSpvvkncc3n)
+        - [Herzkranzgefäße](https://app.tana.inc?nodeid=A84Wqgl6W9q1)
+        - [Sauerstoff](https://app.tana.inc?nodeid=7wxWFj3P1AJQ)
+        - [Koronararterien](https://app.tana.inc?nodeid=debTkyvFc9Cc)
+        - [Koronarvenen](https://app.tana.inc?nodeid=Bj4mI_VHY_Hi)
+      - Liegen direkt auf dem Herzen und versorgen es mit Sauerstoff
+      - Bestehen aus Konorararterien & Koronarvenen
+    - Perikard = Herzbeutel #definition
+      - **Definition**: Herzbeutel
+      - **Topic(s)**: 
+        - [Perikard](https://app.tana.inc?nodeid=tbiRIlrzvmHY)
+        - [Herzbeutel](https://app.tana.inc?nodeid=khRcU9vGQoro)
+        - [Struktur](https://app.tana.inc?nodeid=O3WpmMhHGmFJ)
+        - [Funktionen](https://app.tana.inc?nodeid=BRMVU-9kVcAv)
+        - [Zusammensetzung](https://app.tana.inc?nodeid=rJ89B_YHJ2wm)
+      - **Struktur**:
+        - Das Perikard ist eine doppelwandige Hülle, die das Herz umschließt. Es besteht aus zwei Schichten: dem Pericardium fibrosum (äußere Schicht) und dem Pericardium serosum (innere Schicht)​<a href="https://flexikon.doccheck.com/de/Perikard#:~:text=Als%20Perikard%20oder%20Herzbeutel%20wird,fibrosum%20und%20dem%20Pericardium%20serosum">1</a>​​<a href="https://www.netdoktor.de/anatomie/perikard/#:~:text=Das%20Perikard%20,H%C3%BClle%2C%20die%20das%20Herz%20umschlie%C3%9Ft">2</a>​.
+        - Die innere Schicht, auch als Epikard bekannt, liegt direkt dem Herzen auf und ist über Binde- und Fettgewebe mit dem Myokard (Herzmuskelschicht) verbunden, und überzieht das Herz sowie die Abgänge der großen Gefäße​<a href="https://www.netdoktor.de/anatomie/perikard/#:~:text=Was%20ist%20das%20Perikard%3F%20Das,die%20Abg%C3%A4nge%20der%20gro%C3%9Fen%20Gef%C3%A4%C3%9Fe">3</a>​.
+      - **Funktionen**:
+        - Eine der Hauptfunktionen des Perikards besteht darin, das Herz in seiner Lage zu halten, was wichtig ist, um eine ordnungsgemäße Herzfunktion zu gewährleisten​<a href="https://www.herzzentrum-lahr.de/fachbereiche-krankheitsbilder/krankheitsbilder-a-z/perikarderkrankungen/#:~:text=Das%20Perikard%20,Herz%20in%20seiner%20Lage%20festzuhalten">4</a>​.
+        - Es schafft auch eine schmale Gleitschicht, die dem Herzen freie Bewegungsmöglichkeit gibt, was während des Herzschlags entscheidend ist​<a href="https://de.wikipedia.org/wiki/Herzbeutel#:~:text=Der%20Herzbeutel%20oder%20das%20Perikard,schmale%20Gleitschicht%20freie%20Bewegungsm%C3%B6glichkeit%20gibt">5</a>​.
+      - **Zusammensetzung**:
+        - Das Perikard ist aus Mesothel gebildet, einer Art von Gewebe, das auch in anderen serösen Häuten im Körper gefunden wird​<a href="https://flexikon.doccheck.com/de/Perikard#:~:text=Als%20Perikard%20oder%20Herzbeutel%20wird,fibrosum%20und%20dem%20Pericardium%20serosum">1</a>​.
+      - Das Perikard ist somit eine entscheidende Struktur, die das Herz schützt, seine Position im Thorax aufrechterhält und ihm ermöglicht, effektiv zu schlagen, ohne gegen die umgebenden Strukturen zu reiben.
+    - Systole = Phase des Zusammenziehens der Herzkammern #definition
+      - **Definition**: Phase des Zusammenziehens der Herzkammern
+      - **Topic(s)**: 
+        - [Systole](https://app.tana.inc?nodeid=yJOGa8jUprUp)
+        - [Herzkammern](https://app.tana.inc?nodeid=zTFx-3twL9cB)
+        - [Zusammenziehen](https://app.tana.inc?nodeid=aBOB2ivhdi4m)
+        - [Blut](https://app.tana.inc?nodeid=NEEAB3e3QGDj)
+        - [Arterien](https://app.tana.inc?nodeid=uCwJByjaduad)
+        - [Pumpen](https://app.tana.inc?nodeid=3NzzxCasGNh9)
+        - [Aortenklappe](https://app.tana.inc?nodeid=5n2_ke1YHJ9T)
+        - [Herzzyklus](https://app.tana.inc?nodeid=h0xNIMu3QZ5w)
+        - [Aorta](https://app.tana.inc?nodeid=isY5vVi_DJOa)
+        - [Systemischer Kreislauf](https://app.tana.inc?nodeid=c21BmNnv4UyN)
+        - [Aktive Pumpfunktion](https://app.tana.inc?nodeid=ycXQx0WE4iIe)
+        - [Blutdruck](https://app.tana.inc?nodeid=r3YevTp4uEBq)
+      - Die Systole bezieht sich auf die Phase des Herzzyklus, in der sich die Herzkammern zusammenziehen und Blut in die Arterien pumpen. Während der **Systole schließt sich die Aortenklappe, um zu verhindern, dass Blut zurück in das Herz fließt**, und die Herzkammern kontrahieren sich, um Blut durch die Aortenklappe in die Aorta und weiter in den systemischen Kreislauf zu pumpen. Diese Phase repräsentiert die **aktive Pumpfunktion des Herzens** und ist auch der Zeitpunkt, an dem der **Blutdruck am höchsten** ist.
+    - Diastole = Phase der Entspannung der Herzkammern #definition
+      - **Definition**: Phase der Entspannung der Herzkammern
+      - **Topic(s)**: 
+        - [Diastole](https://app.tana.inc?nodeid=xmuhJCfiyVbX)
+        - [Entspannung](https://app.tana.inc?nodeid=844VUOFs7Br-)
+        - [Herzkammern](https://app.tana.inc?nodeid=zTFx-3twL9cB)
+        - [Blutfluss](https://app.tana.inc?nodeid=Pd0gJ4YFomGd)
+        - [Aortenklappen](https://app.tana.inc?nodeid=R2rqyRgMPIG1)
+        - [Pulmonalklappen](https://app.tana.inc?nodeid=3C0pGJr1sOu_)
+        - [Blutdruck](https://app.tana.inc?nodeid=r3YevTp4uEBq)
+      - Die Diastole ist die Phase des Herzzyklus, in der sich die Herzkammern entspannen und mit Blut füllen. Während der Diastole **öffnen sich die Aorten- und Pulmonalklappen, um den Blutfluss in die Herzkammern zu ermöglichen**, während die AV-Klappen (Atrioventrikularklappen) geschlossen sind, um den Rückfluss von Blut in die Vorhöfe zu verhindern. In dieser Phase füllen sich die Herzkammern mit Blut in Vorbereitung auf die nächste Systole. Die Diastole ist auch der Zeitpunkt, an dem der **Blutdruck am niedrigsten** ist.
+    - Hypertonie = Bluthochdruck #definition
+      - **Definition**: Bluthochdruck
+      - **Topic(s)**: 
+        - [Hypertonie](https://app.tana.inc?nodeid=SjvGIYPY-MuL)
+        - [Bluthochdruck](https://app.tana.inc?nodeid=Q_60vbifBSv_)
+        - [Druck](https://app.tana.inc?nodeid=beSnCbIygQas)
+        - [Blutgefäße](https://app.tana.inc?nodeid=x49sGAmqzzIr)
+        - [Erhöhung](https://app.tana.inc?nodeid=jwINH54VS9QS)
+        - [Blutvolumen](https://app.tana.inc?nodeid=PjmWg1VAlJnv)
+        - [Verengung](https://app.tana.inc?nodeid=drQdWQLA7OhL)
+        - [Belastung](https://app.tana.inc?nodeid=tJ6dLlWoX-W2)
+        - [Herz](https://app.tana.inc?nodeid=EaMhoS2gGbLy)
+        - [Herz-Kreislauf-Erkrankungen](https://app.tana.inc?nodeid=NO_Mc8MZIXmg)
+        - [Symptome](https://app.tana.inc?nodeid=WJrJKZ2bynz0)
+        - [Risiko](https://app.tana.inc?nodeid=7Fa7pm1S93YZ)
+        - [Gesundheitsprobleme](https://app.tana.inc?nodeid=Ol-aSdKU_bDJ)
+        - [Herzinfarkt](https://app.tana.inc?nodeid=MW7XUCaiWYju)
+        - [Schlaganfall](https://app.tana.inc?nodeid=WNsvYVQ3LicS)
+        - [Nierenversagen](https://app.tana.inc?nodeid=b4N-CP6OQiAr)
+      - Hypertonie, auch bekannt als Bluthochdruck, ist ein Zustand, bei dem der **Druck des Blutes auf die Wände der Blutgefäße über einen längeren Zeitraum hinweg zu hoch** ist. Dies kann aufgrund verschiedener Faktoren auftreten, wie z.B. einer **Erhöhung des Blutvolumens oder einer Verengung der Blutgefäße**. Hypertonie kann die **Belastung für das Herz erhöhen und zu Herz-Kreislauf-Erkrankungen** führen. Es ist ein häufiger Zustand, der oft **keine Symptome zeigt**, aber das **Risiko für schwerwiegende Gesundheitsprobleme** wie Herzinfarkt, Schlaganfall und Nierenversagen erhöhen kann.
+    - Hypotonie = Niedriger Blutdruck #definition
+      - **Definition**: Niedriger Blutdruck
+      - **Topic(s)**: 
+        - [Hypotonie](https://app.tana.inc?nodeid=jO9F0hF6cECj)
+        - [Niedriger Blutdruck](https://app.tana.inc?nodeid=04SPbOvcc6fO)
+        - [Blutdruck](https://app.tana.inc?nodeid=r3YevTp4uEBq)
+        - [Arterien](https://app.tana.inc?nodeid=uCwJByjaduad)
+        - [Normal](https://app.tana.inc?nodeid=G0WQiOJeh5Ip)
+        - [Person](https://app.tana.inc?nodeid=tjXiZSqAIIra)
+        - [Problem](https://app.tana.inc?nodeid=614_s05GtC4f)
+        - [Herzprobleme](https://app.tana.inc?nodeid=R5B1bT50qdHC)
+        - [Dehydration](https://app.tana.inc?nodeid=Eo89xh6M5XQo)
+        - [Blutverlust](https://app.tana.inc?nodeid=-4vr1XNyWLh9)
+        - [Nährstoffe](https://app.tana.inc?nodeid=0mhMQpgBNM--)
+        - [Symptome](https://app.tana.inc?nodeid=WJrJKZ2bynz0)
+        - [Schwindel](https://app.tana.inc?nodeid=AH1PsKlPZ7DF)
+        - [Schwäche](https://app.tana.inc?nodeid=QgqpwAZer2V9)
+        - [Müdigkeit](https://app.tana.inc?nodeid=88ma6ynv0bD9)
+        - [Gesundheitsprobleme](https://app.tana.inc?nodeid=Ol-aSdKU_bDJ)
+      - Hypotonie, auch bekannt als niedriger Blutdruck, ist ein Zustand, bei dem der **Blutdruck in den Arterien niedriger ist als normal**. Die genaue „normale“ Blutdruckebene **kann von Person zu Person variieren**, aber Blutdruckwerte, die **deutlich unter dem Durchschnitt liegen, könnten ein Zeichen für ein Problem sein**. Hypotonie kann durch eine Vielzahl von Faktoren verursacht werden, einschließlich **Herzproblemen, Dehydration, Blutverlust oder Mangel an Nährstoffen im Blut**. Niedriger Blutdruck kann zu Symptomen wie **Schwindel, Schwäche und Müdigkeit führen und in schweren Fällen auch zu ernsthaften Gesundheitsproblemen.**
+    - Verdauung = Vorgänge der Zerkleinerung, Aufspaltung, Aufnahme (Resorption) und Weiterleitung der Nahrung bis zur Ausscheidung #definition
+      - **Definition**: Vorgänge der Zerkleinerung, Aufspaltung, Aufnahme (Resorption) und Weiterleitung der Nahrung bis zur Ausscheidung
+    - Appendizitis = Blinddarmentzündung #definition
+      - **Definition**: Blinddarmentzündung
+    - Cholezystitis = Gallenblasenentzündung #definition
+      - **Definition**: Gallenblasenentzündung
+    - Pankreatitits = Bauchspeicheldrüsenentzündung #definition
+      - **Definition**: Bauchspeicheldrüsenentzündung
+    - gastrointentinale Blutungen = Blutung im Magen-Darm-Trakt von Mund - Anus #definition
+      - **Definition**: Blutung im Magen-Darm-Trakt von Mund - Anus
+    - Eileiterschwangerschaft = Schwangerschaft im Eileiter #definition
+      - **Definition**: Schwangerschaft im Eileiter
+      - Ab der 10. Schwangerschaft mit Beschwerden
+  - **Thema: (c) ABCDE-Schema & SAMPLER -- Kommunikation**  #permanent_note
+    - **Incoming Zettel-Relations**: Fleeting and permanent Notes
+    - **PARA Status**: [🟢 Active](https://app.tana.inc?nodeid=oF6_jN-X07xe)
+    - Es ist ganz wichtig, mit den Menschen zu reden
+    - **SAMPLER:**
+      - Symptome
+      - Allergien
+      - Medikamente
+      - Patientengeschichte
+      - Letztes Essen
+      - Ereignis
+      - Risikofaktoren
+    - **(c)ABCDE:**
+      - (c) Kritisches
+      - Airways (Atemwege)
+      - Breathing (Atmung)
+      - Circulation (Kreislauf)
+      - Disability (neurologischer Status)
+      - Exposure (Umweltfaktoren etc.)
+    - Den Menschen erklären was ich mache, nicht fragen
+      - "ich messe jetzt ihren Blutdruck"
+      - "ich ziehe jetzt ihr T-Shirt hoch"
+    - CRM Leitsätze (gibt es nichts zu im Internet)
+  - **Thema: Atemwege & Atmung** #permanent_note
+    - **Incoming Zettel-Relations**: Fleeting and permanent Notes
+    - **PARA Status**: [🟢 Active](https://app.tana.inc?nodeid=oF6_jN-X07xe)
+    - [Zyanose = Blaufärbung der Lippen](https://app.tana.inc?nodeid=r_mJOhMuzsJY)
+    - [Rekappilierungszeit = Zeit, nach der das Nagelbett nach drücken wieder rosa ist](https://app.tana.inc?nodeid=dFtH_xeqpPCP)
+    - **Anatomie**
+      - Atemwege
+        - Nasenhöle
+        - Mundhöle
+        - Nasen-Rachen-Raum = Bereich, in dem Nase und Mundhöhle zusammentreffen #definition
+          - **Definition**: Bereich, in dem Nase und Mundhöhle zusammentreffen
+        - Brustkorb
+          - Larynx = Kehlkopf #definition
+            - **Definition**: Kehlkopf
+            - Epiglottis = Kehldeckel #definition
+              - **Definition**: Kehldeckel
+            - Kehlkopfeingang
+          - Trachea = Luftröhre #definition
+            - **Definition**: Luftröhre
+            - Stimmbänder
+            - **Associated data**
+              - Mitte des Brustkorbs teilt sich [Trachea = Luftröhre](https://app.tana.inc?nodeid=WOs_6Se3iD82) 
+              - rechter & linker Hauptbronchus
+              - Verzweigungen der Bronchien
+              - Bronchiole = kleinste Bronchien am Ende des Luftleitenden Systems #definition
+                - **Definition**: kleinste Bronchien am Ende des Luftleitenden Systems
+              - Alveolen = Lungenbläschen, befinden sich am Ende der [Bronchiole = kleinste Bronchien am Ende des Luftleitenden Systems](https://app.tana.inc?nodeid=iwW_bsW7l_1H) n #definition
+                - **Definition**: Lungenbläschen, befinden sich am Ende der [Bronchiole = kleinste Bronchien am Ende des Luftleitenden Systems](https://app.tana.inc?nodeid=iwW_bsW7l_1H) n
+              - Kapillaren = Umschließende Haargefäße #definition
+                - **Definition**: Umschließende Haargefäße
+                - Hängen an den [Alveolen = Lungenbläschen, befinden sich am Ende der Bronchiole = kleinste Bronchien am Ende des Luftleitenden Systemsn](https://app.tana.inc?nodeid=XeZBD3O3HoX1) und übernehmen den Austausch; sind bestückt mit Venen & Arterien
+          - Speiseröhre
+      - Lungenlappen: rechts 3, links 2 (wegen dem Herzen)
+      - Atemstamm liegt im verlängerten Rückenmark (Medulla oblongata)
+    - alles was mit -itis endet, ist eine Entzündung
+    - Rezeptoren können den pH-Wert des Blutes messen
+      - CO2 ist sauer
+      - zu viel O2 (Hyperventillation) macht das Blut basisch
+    - **Erkrankungen**
+      - **Atemnot**
+      - Ungenügende Atmung
+      - Atemstillstand
+      - **Pneumothorax**
+        - Ein Pneumothorax ist eine **Ansammlung von Luft im Pleuraraum**, dem Raum zwischen Lunge und Brustwand, die zu einem teilweisen oder vollständigen Kollaps der Lunge führen kann
+        - Spontanpneumothorax
+          - Plötzlich und ohne erkennbare Ursache auftretender Pneumothorax. Häufig bei jungen, schlanken Menschen.
+        - Traumatischer Pneumothorax
+          - Pneumothorax nach stumpfem oder penetrierendem Thorax-Trauma, z.B. Rippenserienfraktur.
+        - Spannungspneumothorax
+          - Rasch zunehmender Pneumothorax mit Verlagerung von Mediastinum und Gefäßen. Lebensbedrohlich ohne sofortige Druckentlastung.
+        - Katamenialer Pneumothorax
+          - Pneumothorax bei menstruierenden Frauen, meist rechtsseitig.
+        - Jatrogener Pneumothorax
+          - Pneumothorax als Komplikation diagnostischer oder therapeutischer Maßnahmen.
+        - Chronisch obstruktive Lungenerkrankung (COPD)
+          - Pneumothorax als Komplikation bei COPD-Patienten.
+        - Sekundärer Pneumothorax
+          - Pneumothorax bei Grunderkrankungen der Lunge oder Atemwege.
+      - **Asthma**
+      - **Lungenödem**
+    - **Wichtige Werte**
+      - Durchschnittliche [AF = Atemfrequenz](https://app.tana.inc?nodeid=JqC2MMSPccBB) : 15
+        -
+      - [AZV = Atemzugvolumen](https://app.tana.inc?nodeid=DoktDZsuv9A8) 
+        - Erwachsene: 500-800ml
+        - Kind: 80-200ml
+        - Säugling bis 1J: 20-40ml
+        -
+      - [AMV = Atemminutenvolumen](https://app.tana.inc?nodeid=slAXvZMYXIA7) 
+        - 500ml x 15/min = 7500ml/min
+      - Bestandteile der Luft
+        - Einatemluft
+          - O2: 21%
+          - N2: 78%
+          - Edelgase: 1%
+            - davon CO2: 0,03%
+        - Ausatemluft
+          - O2: 17%
+          - N2: 78%
+          - Edelgase (ohne CO2): 1%
+          - CO2: 4%
+    - **Hilfsmittel**
+      - Absaugung
+      - Guedel-Tubus
+        - Hält Zunge
+        - Kann angewendet werden, sobald die Person bewusstlos ist
+      - Larynx-Tubus
+        - Sorgt für sicherere Beatmung
+        - Kann angewendet werden nur bei Reanimation
+      - Endothrachialtubus
+      - Wendltubus
+      - Beatmungsbeutel
+      - Sauerstoffflasche
+  - **Thema: Blutkreislauf / Kadiovaskuläres System** #permanent_note
+    - **Incoming Zettel-Relations**: Fleeting and permanent Notes
+    - **PARA Status**: [🟢 Active](https://app.tana.inc?nodeid=oF6_jN-X07xe)
+    - **Blut**
+      - Aufgaben
+        - Transportfunktion (Nährstoffe, Abbauprodukte, Sauerstoff)
+        - Wärmeregulierung
+        - Wunden verkleben (Blutgerinnung)
+      - _80ml/kg_
+      - **Bestandteile**
+        - 55% [Blutplasma = flüssige Bestandteile des Blutes](https://app.tana.inc?nodeid=HeDJwW5i3WLN) "das Flüssige"
+          - ca. 90% Wasser
+          - Salze ([Elektrolyte = geladene Teilchen (Ionen) aus Mineralien, die in wässriger Lösung elektrischen Strom leiten können](https://app.tana.inc?nodeid=XDxwoN-3qFOO) ) - max. Werte für z.B. NaCl
+            - Nährstoffe
+            - Hormone
+            - Vitamine
+          - Fibrinogen (Zuständig für Blutgerinnung)
+        - 45% Hämatrokrit
+          - [Thrombotzyten = Blutplättchen](https://app.tana.inc?nodeid=6AlQXE3eAoVx)
+          - [Leukozyten = weiße Blutkörperchen](https://app.tana.inc?nodeid=Au09zqWZ2fyM)
+          - [Erythrozyten = rote Blutkörperchen](https://app.tana.inc?nodeid=qjzc-rV2AX87)
+    - **Gefäßsystem**
+      - Venen & Venolen gehen zum Herz
+        - geringer Innendruck
+        - Venenklappen, damit das Blut "in die richtige Richtung fließt"
+      - Arterien & Arteriolen kommen vom Herzen
+        - Hoher Innendruck
+        - Dicke Muskelschicht
+        - **Wichtige Arterien**
+          - Aorta (Hauptschlagader)
+          - Arteria Carotis (Halsschlagader)
+          - Subklavia-Arterien (Arme, Kopf und Hals)
+          - Radialisarterie (Speichenarterie - Puls)
+        -
+      - [Koronargefäße = Herzkranzgefäße](https://app.tana.inc?nodeid=6zo0imiNjStW)
+    - **Das Herz**
+      - Hohlmuskel
+      - **Lage & Größe**
+        - Befindet sich etwa in der Mitte des Brustkorbs
+        - Liegt auf dem Zwerchfell auf
+        - Etwa Faustgroß
+      - **Aufbau**
+        - Herzscheidewand trennt das Herz
+        - 2 Vorhöfe & Kammern, **getrennt durch Segelklappen**
+          - links: Bikuspidalklappe
+          - rechts: Trikuspidalklappe
+          - Blut strömt aus Vorhöfen in Kammern
+          - Ausgänge der Kammern: **Taschenklappen**
+        - Umgeben vom [Perikard = Herzbeutel](https://app.tana.inc?nodeid=hVPyHwRFoaYz) 
+        - [Koronargefäße = Herzkranzgefäße](https://app.tana.inc?nodeid=6zo0imiNjStW)
+      - **Herzfrequenzen**
+        - Normal: 60 - 80 Schläge pro Minute
+        - Tachykardie: > 100 Schläge p/M
+        - Bradykardie: < 60 Schläge p/M
+        - 2-jähriges Kind: 120
+        - 10-jähriges Kind: 90
+        - Säugling: 140
+      - **Volumen**
+        - Herschlagvolumen etwa 80ml
+        - Herzschlagminutenvolumen: 80ml x 70 bpm = 5,6 Liter
+      - **Kreisläufe**
+        - kleiner Kreislauf geht nur zur Lunge
+        - großer Kreislauf versorgt alles
+    - **Puls / RR**
+      - [Systole = Phase des Zusammenziehens der Herzkammern](https://app.tana.inc?nodeid=G6ytmy8p2DtN) : Herzzustand
+      - [Diastole = Phase der Entspannung der Herzkammern](https://app.tana.inc?nodeid=SDj-x9y9URts) : Gefäßzustand
+      - **Werte**
+        - [Systole = Phase des Zusammenziehens der Herzkammern](https://app.tana.inc?nodeid=G6ytmy8p2DtN) /[Diastole = Phase der Entspannung der Herzkammern](https://app.tana.inc?nodeid=SDj-x9y9URts) 
+        - Guter Wert etwa 120/80
+        - [Hypertonie = Bluthochdruck](https://app.tana.inc?nodeid=b9-7hmSx6Nii) : 150/90
+        - [Hypotonie = Niedriger Blutdruck](https://app.tana.inc?nodeid=Vd_g_SvFtWds) : 100/50
+      - Sinnvoll zu Fragen: Was hat Dr. das letzte mal gemessen?
+    - **Erkrankungen**
+      - **Akutes Coronarsyndrom**
+        - Angina pectoris
+          - Vorstufe des Herzinfarkts
+          - Angina Pectoris ist ein **medizinischer Begriff für Brustschmerz oder Unbehagen, das auftritt, wenn das Herz nicht genug Blut und Sauerstoff erhält**.
+          - **Ursache**:
+            - Angina tritt häufig aufgrund von koronarer Herzkrankheit (KHK) auf, bei der sich die **Koronararterien aufgrund von Plaque-Ablagerungen verengen und verhärten**.
+            - Verletzung einer Gefäßwand -> Blutgerinnung -> verstopftes Gefäß, Durchfluss aber noch möglich
+          - **Symptome**:
+            - **Brustschmerz oder Unbehagen**, oft beschrieben als **Druck, Fülle, oder ein quetschendes Gefühl** in der Mitte des Brustkorbs.
+            - Der Schmerz kann auch im **Hals, Kiefer, Schulter, Rücken oder Arm ausstrahlen**.
+            - Kaltschweißig, hoher Blutdruck, erhöhter Puls, panisch, kurzatmig
+          - **Arten von Angina**:
+            - **Stabile Angina**: Tritt oft nach Anstrengung oder Stress auf und ist vorhersehbar.
+            - **Instabile Angina**: Unvorhersehbar und kann in Ruhe oder mit geringer Anstrengung auftreten, ist oft schwerwiegender und dauert länger.
+            - **Variante Angina (Prinzmetal-Angina)**: Verursacht durch eine vorübergehende Verengung der Koronararterien, oft in Ruhe und in den frühen Morgenstunden.
+          - **Behandlung**:
+            - **Medikamente**, um die Arterien zu erweitern und den Blutfluss zum Herzen zu verbessern, wie Nitroglycerin.
+            - Medikamente zur Senkung des Blutdrucks, Senkung des Cholesterinspiegels und Verhinderung von Blutgerinnseln.
+            - In einigen Fällen können auch Verfahren wie Angioplastie, Stent-Implantation oder Bypass-Operation erforderlich sein.
+          - **Risikofaktoren**:
+            - Zu den Risikofaktoren für Angina Pectoris gehören Rauchen, hoher Blutdruck, hoher Cholesterinspiegel, Diabetes, Übergewicht und Bewegungsmangel.
+          - Angina Pectoris kann ein Warnzeichen für eine ernsthafte Herzerkrankung sein, und jede Person, die Symptome von Angina erlebt, sollte medizinische Aufmerksamkeit suchen.
+        - Herzinfarkt / Myokardinfarkt
+          - Ein Herzinfarkt, auch bekannt als Myokardinfarkt, ist ein ernstes medizinisches Notfallereignis, bei dem der **Blutfluss zum Herzen blockiert** ist, was zu einem **Sauerstoffmangel im Herzmuskel führt und Zellschäden oder Zelltod verursacht**.
+          - **Ursache**:
+            - Häufig verursacht durch die **Bildung von Blutgerinnseln in den Koronararterien**, oft aufgrund von Atherosklerose (Plaque-Ablagerungen in den Arterien).
+            - Verschluss eines Gefäßes
+            - Je größer das betroffene Gefäß, desto höheres Ausmaß
+          - **Symptome**:
+            - **Starke Brustschmerzen** oder Unbehagen, **die in den Arm, Rücken, Kiefer oder Hals ausstrahlen** können.
+            - **Kurzatmigkeit, Schweißausbrüche, Übelkeit, Erbrechen und Ohnmacht**.
+            - Gefühl zu sterben
+          - **Notfallbehandlung**:
+            - Notarzt hinzuziehen
+            - Aspirin, um das Blutgerinnsel aufzulösen und den Blutfluss zu fördern, wenn es keine Kontraindikationen gibt.
+          - **Diagnose**:
+            - EKG (Elektrokardiogramm), Bluttests zur Überprüfung von Herzenzymen, und andere bildgebende Tests wie Echokardiogramm oder Koronarangiographie.
+          - Nachsorge und Rehabilitation:
+            - Medikamente, Änderungen des Lebensstils, kardiologische Rehabilitation, und regelmäßige ärztliche Untersuchungen sind entscheidend für die Erholung und Vorbeugung weiterer Herzinfarkte.
+          - Prävention:
+            - Gesunde Lebensstiländerungen wie Rauchstopp, gesunde Ernährung, regelmäßige Bewegung, und Kontrolle von Blutdruck und Cholesterin können helfen, das Risiko eines Herzinfarkts zu reduzieren.
+          - **Risikofaktoren**:
+            - Rauchen, hoher Blutdruck, hoher Cholesterinspiegel, Diabetes, Übergewicht, und Bewegungsmangel sind Risikofaktoren für einen Herzinfarkt.
+          - Herzinfarkte erfordern sofortige medizinische Aufmerksamkeit, um den Blutfluss zum Herzen wiederherzustellen und weitere Schäden am Herzmuskel zu minimieren. Die frühzeitige Erkennung und Behandlung können lebensrettend sein und die langfristigen Auswirkungen eines Herzinfarkts auf die Gesundheit reduzieren.
+      - Trombose
+        - Eine Thrombose ist ein medizinischer Zustand, bei dem ein **Blutgerinnsel (Thrombus) in einem Blutgefäß bildet**, und kann ein ernsthaftes medizinisches Problem darstellen. Hier sind die wichtigsten Punkte zu Thrombose:
+        - **Ursache**:
+          - Eine Thrombose kann durch verschiedene Faktoren ausgelöst werden, einschließlich **verlangsamter Blutfluss, Blutgerinnungsstörungen oder Schäden an den Blutgefäßwänden**.
+        - **Symptome**:
+          - Schwellung, Schmerzen, Wärme und Rötung in dem Bereich, in dem das Blutgerinnsel liegt, meistens im Bein.
+          - Blass-Kalte Stelle (Arterielle Thrombose) oder Rot-Heiß (Venöse Thrombose)
+          - Wandert durch Bewegung & verschließt Arterien / Venen
+        - **Notfallbehandlung**:
+          - Mit anderer Seite vergleichen (einseitig betroffen?)
+          - Venös: betroffene Extremität oben lagern
+          - Arteriell: betroffene Extremität untern lagern
+          - Extremitäten aufpolstern und direkt ins KH
+          - Bei Verdacht auf eine schwere Thrombose, insbesondere bei Symptomen einer Lungenembolie (Atemnot, Brustschmerzen), sollte sofort medizinische Hilfe in Anspruch genommen werden.
+          - Antikoagulanzien (Blutverdünner) können verabreicht werden, um die Blutgerinnung zu hemmen und das Wachstum des Gerinnsels zu stoppen.
+          - In einigen Fällen kann eine Thrombolyse (Gerinnselauflösung mit Medikamenten) oder eine chirurgische Entfernung des Gerinnsels erforderlich sein.
+        - Diagnose:
+          - Ultraschall ist die häufigste Methode zur Diagnose von tiefen Venenthrombosen. Andere Tests können D-Dimer-Tests, Venographie oder MR-Angiographie sein.
+        - **Prävention**:
+          - **Bewegung, Vermeidung von längeren Perioden des Sitzens oder Stehens**, Tragen von **Kompressionsstrümpfen und Verwendung von Blutverdünnern bei Personen mit hohem Risiko** können helfen, Thrombosen zu verhindern.
+        - **Risikofaktoren**:
+          - Zu den Risikofaktoren gehören **längere Immobilität, Operationen, bestimmte genetische Störungen, Krebs und Krebsbehandlungen, und bestimmte medizinische Bedingungen wie Herzkrankheiten oder Lungenkrankheiten**.
+        - **Komplikationen**:
+          - Eine Thrombose kann zu schwerwiegenden Komplikationen führen, einschließlich Lungenembolie, **wenn das Blutgerinnsel sich löst** und in die Lunge gelangt.
+        - Als Sanitäter ist es entscheidend, die Symptome einer Thrombose zu erkennen und schnell zu handeln, insbesondere bei Patienten, die Anzeichen einer Lungenembolie zeigen, da dies ein lebensbedrohlicher Zustand sein kann. Die rasche Einleitung einer antithrombotischen Therapie und/oder die Überweisung an ein Krankenhaus für eine weitere Behandlung können entscheidend sein, um schwerwiegende Komplikationen zu vermeiden und das Überleben des Patienten zu sichern.
+        - Schlaganfall: "Trombose im Gehirn"
+    - **Reanimation**
+      - Säugling & Baby
+        - 5x Beatmung
+        - Atmung prüfen
+        - 15 Kompression
+        - Danach 15:2
+      - Kleines Kind
+        - 5x Beatmung
+        - 30x Kompression
+        - danach 30:2
+  - **Thema: Abdomen** #permanent_note
+    - **Incoming Zettel-Relations**: Fleeting and permanent Notes
+    - **PARA Status**: [🟢 Active](https://app.tana.inc?nodeid=oF6_jN-X07xe)
+    - [Verdauung = Vorgänge der Zerkleinerung, Aufspaltung, Aufnahme (Resorption) und Weiterleitung der Nahrung bis zur Ausscheidung](https://app.tana.inc?nodeid=QrWe5Y1DAHQX) 
+    - **Organe**
+      - Verdauungsorgane
+        - Mund
+          - Zerkleinerung der Nahrung
+          - chemische Aufspaltung der Speisen
+        - Speiseröhre
+          - muskulöser Schlauch, der durch wellenförmige Bewegungen Nahrung in den [Magen](https://app.tana.inc?nodeid=spHG3Gzj2Aiv) befördert
+        - Magen
+          - Mitte des Oberbauchs
+          - Aufspalten der Nahrungsbestandteile durch Magensaft (besteht zu großem Teil aus Salzsäure)
+          - ständige Bewegung der Magenmuskulatur
+        - Magenausgang
+          - Mageninhalt gelangt durch Schübe in den [Zwölffingerdarm](https://app.tana.inc?nodeid=P5XYfU2EJBd6) 
+        - Dünndarm
+          - Zwölffingerdarm
+            - Zusetzung von Verdauungsfermenten aus Bauchspeicheldrüse & Galle
+            - weitere chemische Aufspaltung
+          - Aufnahme von Nährstoffen (teilweise direkt, teilweise nach Aufspaltung in Leber)
+        - Dickdarm
+        - Blinddarm
+          - Sitzt an Einmündung von [Dünndarm](https://app.tana.inc?nodeid=VEW1Qq4ErAJX) zu [Dickdarm](https://app.tana.inc?nodeid=a5aLOwktrAaH) 
+          -
+      - Weitere Bauchorgane
+        - Leber
+          - größte Düse des Körpers
+          - blutreich
+          - produziert Galle
+          - chemische Umwandlung der zugeführten Stoffe
+          - Entgiftung
+        - Gallenblase
+          - speichert Galle
+          - Gibt bei Bedarf Galle an [Zwölffingerdarm](https://app.tana.inc?nodeid=P5XYfU2EJBd6) ab
+        - Milz
+          - Wichtige Funktion im Abwehrsystem
+          - Baut rote Blutkörperchen ab
+      - Harn- und Geschlechtsorgane
+        - Nieren
+          - mit Nebennieren
+            - bilden > 40 verschiedene Stoffe (Hormone) für verschiedene Körperfunktionen, z.B. Adrenalin
+          - eingebettet in Fettkapsel
+          - körperfremde Stoffe und Stoffe in zu hoher Konzentration ausscheiden
+          - regulieren Wasser- und [Elektrolyte](https://app.tana.inc?nodeid=McQotpicDE2t) -Haushalt
+          - Flüssigkeit gelangt über Harnleiter in Harnblase
+      - Die Organe liegen in der Bauchhöhle, umgeben vom Bauchfell
+        - Bauchfell besitzt sensible Nerven und löst Bauchschmerz aus
+    - **Erkrankungen**
+      - **Akuter Bauch / Aktuer Abdomen**
+        - **Ursachen**
+          - Akute Entzündungen
+            - [Appendizitis = Blinddarmentzündung](https://app.tana.inc?nodeid=04toGmeeSY24)
+            - [Cholezystitis = Gallenblasenentzündung](https://app.tana.inc?nodeid=L3TSIyFPfyLM)
+            - [Pankreatitits = Bauchspeicheldrüsenentzündung](https://app.tana.inc?nodeid=vKIp0Inczw2C)
+          - Darmverschluss
+            - Blockade des Darmes
+            - Ursachen: u.a. Verschlingungen, Verwachsungen, Darmlähmung
+          - Perforation eines Hohlorgans
+          - [gastrointentinale Blutungen = Blutung im Magen-Darm-Trakt von Mund - Anus](https://app.tana.inc?nodeid=dGsiJ3urmMiD)
+          - [Eileiterschwangerschaft = Schwangerschaft im Eileiter](https://app.tana.inc?nodeid=7Tforct1IHbt)
+          - Magen- oder Darmgeschwür
+            - Zerstörung des betroffenen Gewebes
+          - Einklemmung von Gallengangs- oder Harnwegssteinen
+          - Verletzungen der Bauchhöhle / Bauchtraumata
+            - Ursachen: Gewalteinwirkung auf Bauchraum
+              - Leber-, Milz-, Darm und Gefäßverletzungen
+            - Gefahr durch Verbluten (Schock) oder Infektionen (Sepsis)
+            - offenes Bauchtraumata vs geschlossenes / stumpfes
+          - Leberzerfall
+          - Leberentzündung
+          - Niereninsuffizienz
+          - Verletzung
+            - stumpfe Gewalteinwirkung
+            - Verkehrsunfall
+            - Verschüttung
+            - Sportverletzung
+        - **Symptome**
+          - Plötzlicher / Schwerer Bauchschmerz
+            - Schmerzen gehören zu D bei [ABCDE-Schema](https://app.tana.inc?nodeid=HU8Hhqot5-Wi) 
+            - Ausstrahlend
+          - Übelkeit, Erbrechen, Fieber, Blähungen, Durchfall / Verstopfung
+            - Fieber messen
+        - **Maßnahmen**
+          - Sicherstellung Vitalfunktion
+          - O2-Gabe
+          - Schmerzdiagnostik: <span data-inlineref-node="4Ehia7voxDW_">**Schmerztypen**</span>
+          - Schmerzlokalisation
+          - NA
+          - RR, Puls, SPO2
+          - Verbot von Essen, Trinken, Rauchen etc.
+          - Lagerung nach Wunsch
+    - **Schmerztypen**
+      - Perforation
+        - Plötzlicher Schmerz
+        - Kreislauf geht runter
+      - Kolik
+        - Pulsierender Schmerz mit wechselnder Intensität
+        - Häufig in Zusammenhang mit [Gallenblase](https://app.tana.inc?nodeid=10NbzdtEKLyp) und [Nieren](https://app.tana.inc?nodeid=e5I9134SJA_8) 
+      - Entzündung
+        - ansteigender, anhaltender Schmerz, verbunden mit Fieber (individuell)
+`
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    return (
+        <div>
+            <MarkdownParser content={markdownContent}/>
         </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    )
 }
